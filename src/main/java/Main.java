@@ -1,7 +1,14 @@
 import java.awt.BorderLayout;
 import java.io.File;
 import java.util.LinkedList;
-import javax.swing.*;
+
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 
@@ -45,7 +52,8 @@ public class Main {
         playButton.addActionListener(e -> {
 
             mp3Player.pingList();
-
+            mp3Player.play(mp3Player.getSongIndex());
+            
         });
 
         //Pause Button
@@ -58,7 +66,7 @@ public class Main {
         pauseButton.addActionListener(e -> {
 
             System.out.println("Pause button clicked!");
-
+            mp3Player.stop();
         });
 
         //Last Track Button
@@ -119,7 +127,6 @@ public class Main {
 
                     System.out.println("Found music file: " + file.getName());
                     
-                    
     
 
 
@@ -136,7 +143,7 @@ public class Main {
                     model.addRow(new Object[] { file.getName(), (file.length() / 1024) + " KB", new java.util.Date(file.lastModified()).toString() } );
                     
                     currentList.add(file.getName());
-                    mp3Player.setSongList(currentList);
+                    mp3Player.pushSongList(file.getAbsolutePath());
                     System.out.println("Current Song List: " + mp3Player.getSongList());
 
                     
@@ -146,7 +153,19 @@ public class Main {
             }
         });
 
-        
+        //Adding a mouse listener to the table to detect clicks on song names
+        musicTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                int row = musicTable.rowAtPoint(e.getPoint());
+                int col = musicTable.columnAtPoint(e.getPoint());
+                if (row >= 0 && col == 0) { // Assuming song name is in the first column
+                    String songName = musicTable.getValueAt(row, col).toString();
+                    System.out.println("Clicked on song: " + songName);
+                    mp3Player.setSongIndex(row);
+                                       
+                }
+            }
+        });
 
       
 
